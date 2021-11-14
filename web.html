@@ -45,6 +45,7 @@
 
         imgElement.onload = function () {
             loadImg=true
+
             let src = cv.imread(imgElement);
             let gray =new cv.Mat()
             cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
