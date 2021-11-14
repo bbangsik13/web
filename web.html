@@ -25,16 +25,35 @@
         inputElement.addEventListener('change', (e) => {
             imgElement.src = URL.createObjectURL(e.target.files[0]);
         }, false);
+        var loadImg=false
+        function callback(){
+            let weightValue = document.getElementById('weightValue');
+            let trackbar = document.getElementById('trackbar');
+            weightValue.setAttribute('value', trackbar.value);
+            if (loadImg==true){
+                let src = cv.imread(imgElement);
+                let gray =new cv.Mat()
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                let dst = new cv.Mat();
+                thr=Number(trackbar.value)
+                if(thr>254){thr=254}
+                cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
+                cv.imshow('canvasOutput', dst);
+                src.delete(); dst.delete();
+            }
+        }
+
         imgElement.onload = function () {
-      
+            loadImg=true
             let src = cv.imread(imgElement);
+            let gray =new cv.Mat()
+            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
             let dst = new cv.Mat();
-            let M = cv.Mat.eye(3, 3, cv.CV_32FC1);
-            let anchor = new cv.Point(-1, -1);
-            // You can try more different parameters
-            cv.filter2D(src, dst, cv.CV_8U, M, anchor, 0, cv.BORDER_DEFAULT);
+            thr=Number(trackbar.value)
+            if(thr>254){thr=254}
+            cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
             cv.imshow('canvasOutput', dst);
-            src.delete(); dst.delete(); M.delete();
+            src.delete(); dst.delete();
         };
         function onOpenCvReady() {
             document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
@@ -42,5 +61,6 @@
     </script>
     <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 </body>
-
+<input type="range" id="trackbar" value="50" min="0" max="255" step="1" oninput="callback()">
+<input type="text" id="weightValue" size="3" value="50"/>
 </html>
