@@ -21,38 +21,67 @@
     </div>
     <script type="text/javascript">
         let imgElement = document.getElementById('imageSrc');
+        //let canvasElement = document.getElementById('canvasOutput')
         let inputElement = document.getElementById('fileInput');
         inputElement.addEventListener('change', (e) => {
             imgElement.src = URL.createObjectURL(e.target.files[0]);
         }, false);
         var loadImg=false
-        function callback(){
-            let weightValue = document.getElementById('weightValue');
-            let trackbar = document.getElementById('trackbar');
-            weightValue.setAttribute('value', trackbar.value);
-            if (loadImg==true){
-                let src = cv.imread(imgElement);
-                let gray =new cv.Mat()
-                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-                let dst = new cv.Mat();
-                thr=Number(trackbar.value)
-                if(thr>254){thr=254}
-                cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
-                cv.imshow('canvasOutput', dst);
-                src.delete(); dst.delete();
+        
+        //var flagThreshold = false
+        //var tempImg
+        function draw(){
+            let src = cv.imread(imgElement)
+            let trackbar = document.getElementById('threshold_trackbar');
+            let dst = new cv.Mat();
+            thr=Number(trackbar.value)
+            if (thr>254){
+                dst = src.clone()
             }
+            else{
+                let gray =new cv.Mat()
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0); 
+                cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
+                gray.delete()
+            }
+            cv.imshow('canvasOutput', dst);
+            src.delete();dst.delete()
+        }
+
+
+        function threshold(){
+            let weightValue = document.getElementById('threshold_weightValue');
+            let trackbar = document.getElementById('threshold_trackbar');
+            weightValue.setAttribute('value', trackbar.value);
+            if (loadImg==true){draw()}
+        }
+        function brightness(){
+            let weightValue = document.getElementById('brightness_weightValue');
+            let trackbar = document.getElementById('brightness_trackbar');
+            weightValue.setAttribute('value', trackbar.value);
+
+            let src = cv.imread(imgElement);
+            let dst = new cv.Mat();
+            val = Number(trackbar.value)
+            let ksize = new cv.Size(val, val);
+            let anchor = new cv.Point(-1, -1);
+            // You can try more different parameters
+            cv.blur(src, dst, ksize, anchor, cv.BORDER_DEFAULT);
+            // cv.boxFilter(src, dst, -1, ksize, anchor, true, cv.BORDER_DEFAULT)
+            cv.imshow('canvasOutput', dst);
+            src.delete(); dst.delete();
         }
 
         imgElement.onload = function () {
             loadImg=true
-
+            tempImg = new cv.Mat()
             let src = cv.imread(imgElement);
-            let gray =new cv.Mat()
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-            let dst = new cv.Mat();
-            thr=Number(trackbar.value)
+            //let gray =new cv.Mat()
+            //cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+            let dst = cv.imread(imgElement);
+            /*thr=Number(trackbar.value)
             if(thr>254){thr=254}
-            cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
+            cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);*/
             cv.imshow('canvasOutput', dst);
             src.delete(); dst.delete();
         };
@@ -62,6 +91,12 @@
     </script>
     <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 </body>
-<input type="range" id="trackbar" value="50" min="0" max="255" step="1" oninput="callback()">
-<input type="text" id="weightValue" size="3" value="50"/>
+<br>
+<span>threshold</span>
+<input type="range" id="threshold_trackbar" value="255" min="0" max="255" step="1" oninput="threshold()">
+<input type="text" id="threshold_weightValue" size="3" value="255"/>
+<br>
+<span>blur</span>
+<input type="range" id="brightness_trackbar" value="0" min="0" max="30" step="1" oninput="brightness()">
+<input type="text" id="brightness_weightValue" size="3" value="0"/>
 </html>
