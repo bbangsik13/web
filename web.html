@@ -32,46 +32,78 @@
         //var tempImg
         function draw(){
             let src = cv.imread(imgElement)
-            let trackbar = document.getElementById('threshold_trackbar');
-            let dst = new cv.Mat();
-            thr=Number(trackbar.value)
-            if (thr>254){
-                dst = src.clone()
+            let dst = src.clone()
+            cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
+            //bilateral_blur
+            let bilateral_blur_trackbar = document.getElementById('bilateral_blur_trackbar');
+            bilateral_blur_val = Number(bilateral_blur_trackbar.value)
+            if(bilateral_blur_val>1){
+                cv.bilateralFilter(src, dst, bilateral_blur_val, 75, 75, cv.BORDER_DEFAULT);
             }
-            else{
-                let gray =new cv.Mat()
-                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0); 
-                cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);
-                gray.delete()
+            //gray
+            let grayscale_check = document.getElementById('grayscale');
+            if(grayscale_check.checked){
+                cv.cvtColor(dst, dst, cv.COLOR_RGB2GRAY, 0); 
             }
+            //blur
+            let blur_trackbar = document.getElementById('blur_trackbar');
+            blur_val = Number(blur_trackbar.value)
+            if(blur_val>1){
+                let ksize = new cv.Size(blur_val, blur_val);
+                let anchor = new cv.Point(-1, -1);
+                // You can try more different parameters
+                cv.blur(dst, dst, ksize, anchor, cv.BORDER_DEFAULT);
+            }
+            //gaussian_blur
+            let gaussian_blur_trackbar = document.getElementById('gaussian_blur_trackbar');
+            gaussian_blur_val = Number(gaussian_blur_trackbar.value)
+            if(gaussian_blur_val>1){
+                let ksize = new cv.Size(gaussian_blur_val, gaussian_blur_val);
+                cv.GaussianBlur(dst, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
+            }
+            //median_blur
+            let median_blur_trackbar = document.getElementById('median_blur_trackbar');
+            median_blur_val = Number(median_blur_trackbar.value)
+            if(median_blur_val>1){
+                cv.medianBlur(dst, dst, median_blur_val);
+            }
+            
             cv.imshow('canvasOutput', dst);
             src.delete();dst.delete()
         }
 
-
-        function threshold(){
-            let weightValue = document.getElementById('threshold_weightValue');
-            let trackbar = document.getElementById('threshold_trackbar');
-            weightValue.setAttribute('value', trackbar.value);
+        function grayscale(){
             if (loadImg==true){draw()}
         }
-        function brightness(){
-            let weightValue = document.getElementById('brightness_weightValue');
-            let trackbar = document.getElementById('brightness_trackbar');
-            weightValue.setAttribute('value', trackbar.value);
 
-            let src = cv.imread(imgElement);
-            let dst = new cv.Mat();
-            val = Number(trackbar.value)
-            let ksize = new cv.Size(val, val);
-            let anchor = new cv.Point(-1, -1);
-            // You can try more different parameters
-            cv.blur(src, dst, ksize, anchor, cv.BORDER_DEFAULT);
-            // cv.boxFilter(src, dst, -1, ksize, anchor, true, cv.BORDER_DEFAULT)
-            cv.imshow('canvasOutput', dst);
-            src.delete(); dst.delete();
+        function avr_blur(){
+            let blur_weightValue = document.getElementById('blur_weightValue');
+            let blur_trackbar = document.getElementById('blur_trackbar');
+            blur_weightValue.setAttribute('value', blur_trackbar.value);
+            if (loadImg==true){draw()}
         }
 
+        function gaussian_blur(){
+            let gaussian_blur_weightValue = document.getElementById('gaussian_blur_weightValue');
+            let gaussian_blur_trackbar = document.getElementById('gaussian_blur_trackbar');
+            gaussian_blur_weightValue.setAttribute('value', gaussian_blur_trackbar.value);
+            if (loadImg==true){draw()}
+        }
+
+        function median_blur(){
+            let median_blur_weightValue = document.getElementById('median_blur_weightValue');
+            let median_blur_trackbar = document.getElementById('median_blur_trackbar');
+            median_blur_weightValue.setAttribute('value', median_blur_trackbar.value);
+            if (loadImg==true){draw()}
+        }
+        function bilateral_blur(){
+            let bilateral_blur_weightValue = document.getElementById('bilateral_blur_weightValue');
+            let bilateral_blur_trackbar = document.getElementById('bilateral_blur_trackbar');
+            bilateral_blur_weightValue.setAttribute('value', bilateral_blur_trackbar.value);
+            if (loadImg==true){draw()}
+            
+        }
+        
         imgElement.onload = function () {
             loadImg=true
             tempImg = new cv.Mat()
@@ -92,11 +124,23 @@
     <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 </body>
 <br>
-<span>threshold</span>
-<input type="range" id="threshold_trackbar" value="255" min="0" max="255" step="1" oninput="threshold()">
-<input type="text" id="threshold_weightValue" size="3" value="255"/>
+<span>grayscale</span>
+<input type="checkbox" id="grayscale" oninput="grayscale()">
 <br>
-<span>blur</span>
-<input type="range" id="brightness_trackbar" value="0" min="0" max="30" step="1" oninput="brightness()">
-<input type="text" id="brightness_weightValue" size="3" value="0"/>
+<span>avr_blur</span>
+<input type="range" id="blur_trackbar" value="0" min="0" max="30" step="1" oninput="avr_blur()">
+<input type="text" id="blur_weightValue" size="3" value="0"/>
+<br>
+<span>gaussian_blur</span>
+<input type="range" id="gaussian_blur_trackbar" value="0" min="0" max="30" step="1" oninput="gaussian_blur()">
+<input type="text" id="gaussian_blur_weightValue" size="3" value="0"/>
+<br>
+<span>median_blur</span>
+<input type="range" id="median_blur_trackbar" value="0" min="0" max="10" step="1" oninput="median_blur()">
+<input type="text" id="median_blur_weightValue" size="3" value="0"/>
+<br>
+<span>bilateral_blur</span>
+<input type="range" id="bilateral_blur_trackbar" value="0" min="0" max="30" step="1" oninput="bilateral_blur()">
+<input type="text" id="bilateral_blur_weightValue" size="3" value="0"/>
+<br>
 </html>
