@@ -1,36 +1,180 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Hello OpenCV.js</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.80.0">
+  <title>smoothing</title>
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/album/">
+
+
+
+  <!-- Bootstrap core CSS -->
+  <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+
 </head>
 
 <body>
-    <h2>Hello OpenCV.js</h2>
-    <p id="status">OpenCV.js is loading...</p>
-    <div>
-        <div class="inputoutput">
-            <img id="imageSrc" alt="No Image" />
-            <div class="caption">imageSrc <input type="file" id="fileInput" name="file" /></div>
+
+  <header>
+    <div class="collapse bg-dark" id="navbarHeader">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-8 col-md-7 py-4">
+            <h4 class="text-white">About</h4>
+            <p class="text-muted">smoothing</p>
+          </div>
+          <!-- <div class="col-sm-4 offset-md-1 py-4">
+            <h4 class="text-white">Contact</h4>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">Follow on Twitter</a></li>
+              <li><a href="#" class="text-white">Like on Facebook</a></li>
+              <li><a href="#" class="text-white">Email me</a></li>
+            </ul>
+          </div> -->
         </div>
-        <div class="inputoutput">
-            <canvas id="canvasOutput"></canvas>
-            <div class="caption">canvasOutput</div>
-        </div>
+      </div>
     </div>
-    <script type="text/javascript">
-        let imgElement = document.getElementById('imageSrc');
-        //let canvasElement = document.getElementById('canvasOutput')
-        let inputElement = document.getElementById('fileInput');
-        inputElement.addEventListener('change', (e) => {
-            imgElement.src = URL.createObjectURL(e.target.files[0]);
-        }, false);
-        var loadImg=false
-        
-        //var flagThreshold = false
-        //var tempImg
-        function draw(){
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+      <div class="container">
+        <a href="#" class="navbar-brand d-flex align-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+            stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2"
+            viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          <strong>smoothing</strong>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
+          aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="py-5 text-center container">
+      <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+          <h1 class="fw-light">smoothing</h1>
+          <p class="lead text-muted" id="status">OpenCV.js is loading...</p>
+          <div class="spinner-border text-primary" role="status" id="loader">
+            <span class="sr-only"></span>
+          </div>
+
+
+        </div>
+      </div>
+    </section>
+
+    <div class="album py-5 bg-light">
+      <div class="container">
+
+        <div class="row row-cols-1 row-cols-sm-2 g-3 text-center">
+          <div class="col">
+            <div class="card shadow-sm">
+              <img id="imageSrc" src="" />
+
+              <div class="card-body">
+                <p class="card-text">원본</p>
+                <input class="btn btn-sm btn-outline-secondary" type="file" id="fileInput" name="file" />
+
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm">
+              <canvas id="canvasOutput"></canvas>
+              <div class="card-body">
+                <p class="card-text">변환 결과</p>
+                <a id="link"><button type="button" class="btn btn-sm btn-outline-secondary"
+                    onClick="saveImage()">다운로드</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <center>
+      <span>grayscale</span>
+      <input type="checkbox" id="grayscale" oninput="grayscale()">
+      </center>
+      <br>
+      <center>
+      <span>avr_blur</span>
+      <input type="range" id="blur_trackbar" value="0" min="0" max="30" step="1" oninput="avr_blur()">
+      <input type="text" id="blur_weightValue" size="3" value="0"/>
+      </center>
+      <br>
+      <center>
+      <span>gaussian_blur</span>
+      <input type="range" id="gaussian_blur_trackbar" value="0" min="0" max="30" step="1" oninput="gaussian_blur()">
+      <input type="text" id="gaussian_blur_weightValue" size="3" value="0"/>
+      </center>
+      <br>
+      <center>
+      <span>median_blur</span>
+      <input type="range" id="median_blur_trackbar" value="0" min="0" max="10" step="1" oninput="median_blur()">
+      <input type="text" id="median_blur_weightValue" size="3" value="0"/>
+      </center>
+      <br>
+      <center>
+      <span>bilateral_blur</span>
+      <input type="range" id="bilateral_blur_trackbar" value="0" min="0" max="30" step="1" oninput="bilateral_blur()">
+      <input type="text" id="bilateral_blur_weightValue" size="3" value="0"/>
+      </center>
+      <br>
+    </div>
+
+  </main>
+
+
+  <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript">
+    document.getElementById("link").style.visibility = "hidden";
+
+    function saveImage() {
+      var canvas = document.getElementById("canvasOutput");
+      var link = document.getElementById('link');
+      link.setAttribute('download', 'result.png');
+      link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+    }
+
+    let imgElement = document.getElementById('imageSrc');
+    let inputElement = document.getElementById('fileInput');
+
+    inputElement.addEventListener('change', (e) => {
+      imgElement.src = URL.createObjectURL(e.target.files[0]);
+    }, false);
+
+    var loadImg=false
+    function draw(){
             let src = cv.imread(imgElement)
             let dst = src.clone()
             cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
@@ -103,44 +247,24 @@
             if (loadImg==true){draw()}
             
         }
-        
-        imgElement.onload = function () {
-            loadImg=true
-            tempImg = new cv.Mat()
-            let src = cv.imread(imgElement);
-            //let gray =new cv.Mat()
-            //cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-            let dst = cv.imread(imgElement);
-            /*thr=Number(trackbar.value)
-            if(thr>254){thr=254}
-            cv.threshold(gray, dst, thr, 255, cv.THRESH_BINARY);*/
-            cv.imshow('canvasOutput', dst);
-            src.delete(); dst.delete();
-        };
-        function onOpenCvReady() {
-            document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
-        }
-    </script>
-    <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+    imgElement.onload = function () {
+      let src = cv.imread(imgElement);
+      let dst = src.clone()      
+      cv.imshow('canvasOutput', dst);
+      loadImg=true
+      document.getElementById("link").style.visibility = "visible";
+      src.delete();dst.delete();
+    };
+
+    function onOpenCvReady() {
+      {
+        document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
+        document.getElementById("loader").style.display = "none";
+      }
+    }
+  </script>
+  <script async src="opencv2.js" onload="onOpenCvReady();" type="text/javascript"></script>
+
 </body>
-<br>
-<span>grayscale</span>
-<input type="checkbox" id="grayscale" oninput="grayscale()">
-<br>
-<span>avr_blur</span>
-<input type="range" id="blur_trackbar" value="0" min="0" max="30" step="1" oninput="avr_blur()">
-<input type="text" id="blur_weightValue" size="3" value="0"/>
-<br>
-<span>gaussian_blur</span>
-<input type="range" id="gaussian_blur_trackbar" value="0" min="0" max="30" step="1" oninput="gaussian_blur()">
-<input type="text" id="gaussian_blur_weightValue" size="3" value="0"/>
-<br>
-<span>median_blur</span>
-<input type="range" id="median_blur_trackbar" value="0" min="0" max="10" step="1" oninput="median_blur()">
-<input type="text" id="median_blur_weightValue" size="3" value="0"/>
-<br>
-<span>bilateral_blur</span>
-<input type="range" id="bilateral_blur_trackbar" value="0" min="0" max="30" step="1" oninput="bilateral_blur()">
-<input type="text" id="bilateral_blur_weightValue" size="3" value="0"/>
-<br>
+
 </html>
