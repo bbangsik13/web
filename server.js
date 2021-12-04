@@ -1,9 +1,9 @@
-var http = require('http')
-var express = require('express')
-var app = express()
+var express = require('express');
+var app = express();
 
-app.get('',(req,res)=>{res.sendFile(__dirname+'/web.html')})
+app.use(express.static(__dirname + '/static')); // 1
 
-http.createServer(app).listen(8888,function(){
-    console.log("http://127.0.0.1:8888")
-})
+var port = 3000;
+app.listen(port, function(){
+  console.log('server on! http://localhost:'+port);
+});
