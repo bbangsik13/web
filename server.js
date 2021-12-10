@@ -96,7 +96,7 @@ app.post('/register', function(request, response) {
         });
 			  response.send(username + ' Registered Successfully!<br><a href="/home">Home</a>');
 			} else {
-				response.send(username + ' Already exists!<br><a href="/home">Home</a>');
+				response.send(username + ' Already exists!<br><a href="/">Home</a>');
 			}			
 			response.end();
 		});
