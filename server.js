@@ -19,7 +19,7 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-app.use(express.static('static'));
+//app.use(express.static('static'));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
@@ -114,7 +114,7 @@ app.get('/logout', function(request, response) {
 
 app.get('/home', restrict, function(request, response) {
 	if (request.session.loggedin) {
-		//app.use(express.static('static'));
+		app.use(express.static('static'));
 		response.sendFile(path.join(__dirname + '/static/index.html'));
 		
 	} else {
